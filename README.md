@@ -192,6 +192,8 @@ Use the energy entity for the Home Assistant Energy dashboard, not the live powe
 ## Notes
 
 - The decoder auto-locks to the best repeating transmitter by default
+- Auto-lock normally takes around 20-30 seconds after boot because it waits for multiple matching frames from the same transmitter
+- After first discovery, set `preferred_tx_id` to your known transmitter ID for immediate filtering on future boots
 - `GDO2` must be connected for carrier detect in FSK mode
 - Raw bytes are available as a disabled diagnostic entity if you set `publish_raw_bytes` to `true`
 - The component currently targets one transmitter at a time, either auto-locked or fixed by ID
