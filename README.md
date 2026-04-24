@@ -88,6 +88,7 @@ substitutions:
 external_components:
   - source: github://91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home@main
     components: [efergy_cc1101]
+    refresh: 0s
 
 spi:
   id: efergy_spi_bus
