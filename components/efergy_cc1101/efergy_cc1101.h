@@ -56,6 +56,10 @@ class EfergyCc1101Component : public Component,
   static constexpr uint32_t FINAL_GAP_US = 2500;
   static constexpr uint32_t MAX_CAPTURE_US = 20000;
   static constexpr uint32_t REARM_INTERVAL_MS = 60000;
+  static constexpr uint32_t LOCK_CANDIDATE_TIMEOUT_MS = 45000;
+  static constexpr uint32_t LOCK_INTERVAL_TOLERANCE_MS = 4000;
+  static constexpr uint8_t LOCK_MIN_HITS = 3;
+  static constexpr int LOCK_MIN_QUALITY = 10;
 
   static EfergyCc1101Component *instance_;
 
@@ -95,6 +99,10 @@ class EfergyCc1101Component : public Component,
   uint16_t last_tx_id_{0};
   uint32_t last_tx_seen_ms_{0};
   uint8_t last_tx_hits_{0};
+  uint16_t contender_tx_id_{0};
+  uint32_t contender_last_seen_ms_{0};
+  uint8_t contender_hits_{0};
+  uint8_t contender_interval_s_{0};
   uint16_t locked_tx_id_{0};
   uint16_t preferred_tx_id_{0};
 
