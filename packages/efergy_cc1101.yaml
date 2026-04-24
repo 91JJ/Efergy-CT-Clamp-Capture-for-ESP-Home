@@ -1,10 +1,10 @@
 substitutions:
   device_name: efergy-sensor
   friendly_name: Efergy Energy Monitor
-  board_type: az-delivery-devkit-v4
+  board_type: esp32dev
   wifi_ssid: ""
   wifi_password: ""
-  fallback_ap_password: "change-me"
+  fallback_ap_password: "change-this-fallback-password"
   mains_voltage: "230.0"
   preferred_tx_id: "auto"
   publish_raw_bytes: "false"
@@ -58,31 +58,24 @@ efergy_cc1101:
   current:
     id: efergy_current_a
     name: "${friendly_name} Current"
-    object_id: efergy_current
   power:
     id: efergy_power_w
     name: "${friendly_name} Power Usage"
-    object_id: efergy_power_usage
   interval:
     id: efergy_interval_s
     name: "${friendly_name} Interval"
-    object_id: efergy_interval
   pairing:
     id: efergy_pairing
     name: "${friendly_name} Pairing Mode"
-    object_id: efergy_pairing_mode
   tx_id:
     id: efergy_tx_id
     name: "${friendly_name} TX ID"
-    object_id: efergy_tx_id
   battery_state:
     id: efergy_battery_state
     name: "${friendly_name} Battery State"
-    object_id: efergy_battery_state
   raw_bytes:
     id: efergy_raw_bytes
     name: "${friendly_name} Raw Bytes"
-    object_id: efergy_raw_bytes
     disabled_by_default: true
 
 sensor:
@@ -98,7 +91,6 @@ sensor:
   - platform: integration
     id: efergy_energy_kwh
     name: "${friendly_name} Energy Usage"
-    object_id: efergy_energy_usage
     sensor: efergy_power_kw
     unit_of_measurement: "kWh"
     device_class: energy
