@@ -4,7 +4,6 @@ This package receives and decodes an Efergy E2 Classic energy monitor using an E
 
 <img width="294" height="318"  alt="efergy ct clamp" src="https://github.com/user-attachments/assets/c5aafdd4-e60d-4944-a391-00c43ad7695b" />
 
-
 ## Why this layout
 
 The decoder logic is still non-trivial because it has to:
@@ -90,11 +89,63 @@ external_components:
   - source: github://91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home@main
     components: [efergy_cc1101]
 
-packages:
-  efergy:
-    url: https://github.com/91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home
-    file: packages/efergy_cc1101.yaml
-    ref: main
+spi:
+  id: efergy_spi_bus
+  clk_pin: ${pin_cc1101_sck}
+  miso_pin: ${pin_cc1101_miso}
+  mosi_pin: ${pin_cc1101_mosi}
+
+efergy_cc1101:
+  spi_id: efergy_spi_bus
+  mains_voltage: ${mains_voltage}
+  preferred_tx_id: "${preferred_tx_id}"
+  publish_raw_bytes: ${publish_raw_bytes}
+  cs_pin: ${pin_cc1101_csn}
+  gdo0_pin: ${pin_cc1101_gdo0}
+  gdo2_pin: ${pin_cc1101_gdo2}
+  current:
+    id: efergy_current_a
+    name: "${friendly_name} Current"
+  power:
+    id: efergy_power_w
+    name: "${friendly_name} Power Usage"
+  interval:
+    id: efergy_interval_s
+    name: "${friendly_name} Interval"
+  pairing:
+    id: efergy_pairing
+    name: "${friendly_name} Pairing Mode"
+  tx_id:
+    id: efergy_tx_id
+    name: "${friendly_name} TX ID"
+  battery_state:
+    id: efergy_battery_state
+    name: "${friendly_name} Battery State"
+  raw_bytes:
+    id: efergy_raw_bytes
+    name: "${friendly_name} Raw Bytes"
+    disabled_by_default: true
+
+sensor:
+  - platform: copy
+    id: efergy_power_kw
+    source_id: efergy_power_w
+    internal: true
+    unit_of_measurement: "kW"
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.001
+
+  - platform: integration
+    id: efergy_energy_kwh
+    name: "${friendly_name} Energy Usage"
+    sensor: efergy_power_kw
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+    time_unit: h
+    restore: true
+    accuracy_decimals: 3    
 ```
 
 That is the intended end-user setup.
@@ -151,4 +202,3 @@ Good candidates for future polish:
 - optional multi-transmitter support
 - optional accepted-packet logging toggle
 - more formal release/test structure for publication
-
