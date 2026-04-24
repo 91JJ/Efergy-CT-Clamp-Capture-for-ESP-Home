@@ -23,7 +23,6 @@ The component now also follows the normal ESPHome SPI pattern internally: the pa
 
 - `components/efergy_cc1101` external component containing the decoder
 - `packages/efergy_cc1101.yaml` reusable package with sensors and diagnostics
-- stable `object_id` values for Home Assistant
 - energy sensor wired using ESPHome's built-in integration platform
 - ESPHome-native SPI bus/device usage internally
 
@@ -70,10 +69,9 @@ That keeps the repository standard for ESPHome and keeps the user's YAML short.
 1. Create a local `secrets.yaml` next to your device YAML
 2. Fill in your Wi-Fi details
 3. Copy the minimal YAML from this README into your own device YAML
-4. Replace `YOUR_GITHUB_USER/YOUR_REPOSITORY`
-5. Change only the substitutions you need
-6. Flash with ESPHome
-7. Watch logs until the decoder locks onto your transmitter
+4. Change only the substitutions you need
+5. Flash with ESPHome
+6. Watch logs until the decoder locks onto your transmitter
 
 ## Minimal user YAML
 
@@ -81,7 +79,7 @@ That keeps the repository standard for ESPHome and keeps the user's YAML short.
 substitutions:
   device_name: efergy-sensor
   friendly_name: Efergy Energy Monitor
-  board_type: az-delivery-devkit-v4
+  board_type: esp32dev
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
   fallback_ap_password: !secret fallback_ap_password
@@ -89,11 +87,14 @@ substitutions:
   preferred_tx_id: "auto"
 
 external_components:
-  - source: github://YOUR_GITHUB_USER/YOUR_REPOSITORY@main
+  - source: github://91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home@main
     components: [efergy_cc1101]
 
 packages:
-  efergy: github://YOUR_GITHUB_USER/YOUR_REPOSITORY/packages/efergy_cc1101.yaml@main
+  efergy:
+    url: https://github.com/91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home
+    file: packages/efergy_cc1101.yaml
+    ref: main
 ```
 
 That is the intended end-user setup.
@@ -110,7 +111,7 @@ Most users only need to change:
 - `mains_voltage`
 - `preferred_tx_id`
 
-Leave `preferred_tx_id: "auto"` for first setup. Once you know your transmitter ID, you can set it to a fixed value such as `C714` or `50964`.
+Leave `preferred_tx_id: "auto"` for first setup. Once you know your transmitter ID, you can set it to that fixed value in either hex or decimal form.
 
 ## What got simpler
 
@@ -150,3 +151,4 @@ Good candidates for future polish:
 - optional multi-transmitter support
 - optional accepted-packet logging toggle
 - more formal release/test structure for publication
+
