@@ -38,6 +38,8 @@ api:
 ota:
   platform: esphome
 
+captive_portal:
+
 logger:
   level: INFO
 
@@ -56,31 +58,23 @@ efergy_cc1101:
   gdo0_pin: ${pin_cc1101_gdo0}
   gdo2_pin: ${pin_cc1101_gdo2}
   current:
-    id: efergy_current_a
     name: "${friendly_name} Current"
   power:
-    id: efergy_power_w
     name: "${friendly_name} Power Usage"
   interval:
-    id: efergy_interval_s
     name: "${friendly_name} Interval"
   pairing:
-    id: efergy_pairing
     name: "${friendly_name} Pairing Mode"
   tx_id:
-    id: efergy_tx_id
     name: "${friendly_name} TX ID"
   battery_state:
-    id: efergy_battery_state
     name: "${friendly_name} Battery State"
   raw_bytes:
-    id: efergy_raw_bytes
     name: "${friendly_name} Raw Bytes"
     disabled_by_default: true
 
 sensor:
   - platform: copy
-    id: efergy_power_kw
     source_id: efergy_power_w
     internal: true
     unit_of_measurement: "kW"
@@ -89,7 +83,6 @@ sensor:
       - multiply: 0.001
 
   - platform: integration
-    id: efergy_energy_kwh
     name: "${friendly_name} Energy Usage"
     sensor: efergy_power_kw
     unit_of_measurement: "kWh"
