@@ -420,6 +420,13 @@ bool EfergyCc1101Component::accept_candidate_(const DecodeResult &candidate) {
   if (candidate.quality < 4)
     return false;
 
+  if (contender_tx_id_ != 0 && (now - contender_last_seen_ms_) > LOCK_CANDIDATE_TIMEOUT_MS) {
+    contender_tx_id_ = 0;
+    contender_last_seen_ms_ = 0;
+    contender_hits_ = 0;
+    contender_interval_s_ = 0;
+  }
+
   if (candidate.tx_id == last_tx_id_ && (now - last_tx_seen_ms_) <= 30000U) {
     if (last_tx_hits_ < 255)
       last_tx_hits_++;
@@ -429,10 +436,37 @@ bool EfergyCc1101Component::accept_candidate_(const DecodeResult &candidate) {
   }
   last_tx_seen_ms_ = now;
 
-  if (candidate.quality >= 10 && last_tx_hits_ >= 2) {
-    locked_tx_id_ = candidate.tx_id;
-    ESP_LOGI(TAG, "Locked TX candidate %04X after %u good frames", locked_tx_id_, last_tx_hits_);
-    return true;
+  const bool plausible_lock_candidate = candidate.quality >= LOCK_MIN_QUALITY && !candidate.pairing && candidate.tx_id != 0 &&
+                                       candidate.tx_id != 0x0080 && candidate.interval_s >= 8 && candidate.interval_s <= 24;
+
+  if (plausible_lock_candidate) {
+    if (contender_tx_id_ == candidate.tx_id) {
+      const uint32_t age_ms = now - contender_last_seen_ms_;
+      const uint32_t expected_ms = (uint32_t) std::max<int>(candidate.interval_s, contender_interval_s_) * 1000U;
+      const bool interval_matches = age_ms >= 3000U &&
+                                    (age_ms + LOCK_INTERVAL_TOLERANCE_MS >= expected_ms) &&
+                                    (age_ms <= expected_ms * 2U + LOCK_INTERVAL_TOLERANCE_MS);
+
+      if (interval_matches) {
+        if (contender_hits_ < 255)
+          contender_hits_++;
+      } else {
+        contender_hits_ = 1;
+      }
+    } else if (contender_tx_id_ == 0 || (now - contender_last_seen_ms_) > LOCK_CANDIDATE_TIMEOUT_MS) {
+      contender_tx_id_ = candidate.tx_id;
+      contender_hits_ = 1;
+    }
+
+    if (contender_tx_id_ == candidate.tx_id) {
+      contender_last_seen_ms_ = now;
+      contender_interval_s_ = (uint8_t) candidate.interval_s;
+      if (contender_hits_ >= LOCK_MIN_HITS) {
+        locked_tx_id_ = contender_tx_id_;
+        ESP_LOGI(TAG, "Locked TX candidate %04X after %u matching frames", locked_tx_id_, contender_hits_);
+        return true;
+      }
+    }
   }
 
   return candidate.quality >= 12;
@@ -628,6 +662,10 @@ void EfergyCc1101Component::apply_preferred_tx_id_() {
   locked_tx_id_ = preferred_tx_id_;
   last_tx_id_ = preferred_tx_id_;
   last_tx_hits_ = 0;
+  contender_tx_id_ = 0;
+  contender_last_seen_ms_ = 0;
+  contender_hits_ = 0;
+  contender_interval_s_ = 0;
   if (preferred_tx_id_ == 0) {
     ESP_LOGI(TAG, "TX selection: auto");
   } else {
