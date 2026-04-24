@@ -79,12 +79,24 @@ substitutions:
   device_name: efergy-sensor
   friendly_name: Efergy Energy Monitor
   board_type: esp32dev
-  wifi_ssid: !secret wifi_ssid
-  wifi_password: !secret wifi_password
-  fallback_ap_password: !secret fallback_ap_password
   mains_voltage: "230.0"
-  preferred_tx_id: "auto"
+  preferred_tx_id: "AUTO"
   publish_raw_bytes: "false"
+  pin_cc1101_sck: "14"
+  pin_cc1101_mosi: "13"
+  pin_cc1101_miso: "12"
+  pin_cc1101_csn: "5"
+  pin_cc1101_gdo0: "4"
+  pin_cc1101_gdo2: "27"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: ${board_type}
+  framework:
+    type: arduino
 
 external_components:
   - source: github://91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home@main
