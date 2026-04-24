@@ -2,6 +2,9 @@
 
 This package receives and decodes an Efergy E2 Classic energy monitor using an ESP32 and a CC1101 in FSK mode.
 
+<img width="294" height="318"  alt="efergy ct clamp" src="https://github.com/user-attachments/assets/c5aafdd4-e60d-4944-a391-00c43ad7695b" />
+
+
 ## Why this layout
 
 The decoder logic is still non-trivial because it has to:
