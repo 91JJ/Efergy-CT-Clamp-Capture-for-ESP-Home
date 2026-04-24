@@ -36,7 +36,7 @@ The component now also follows the normal ESPHome SPI pattern internally: the pa
 
 - ESP32 board running ESPHome
 - CC1101 433 MHz module
-- Efergy E2 Classic transmitter
+- Efergy CT Clamp Transmitter
 
 ## Default wiring
 
