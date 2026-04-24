@@ -1,0 +1,108 @@
+substitutions:
+  device_name: efergy-sensor
+  friendly_name: Efergy Energy Monitor
+  board_type: az-delivery-devkit-v4
+  wifi_ssid: ""
+  wifi_password: ""
+  fallback_ap_password: "change-me"
+  mains_voltage: "230.0"
+  preferred_tx_id: "auto"
+  publish_raw_bytes: "false"
+  pin_cc1101_sck: "14"
+  pin_cc1101_mosi: "13"
+  pin_cc1101_miso: "12"
+  pin_cc1101_csn: "5"
+  pin_cc1101_gdo0: "4"
+  pin_cc1101_gdo2: "27"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: ${board_type}
+  framework:
+    type: arduino
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  ap:
+    ssid: ${device_name}-fallback
+    password: ${fallback_ap_password}
+  power_save_mode: none
+  fast_connect: true
+
+api:
+
+ota:
+  platform: esphome
+
+logger:
+  level: INFO
+
+spi:
+  id: efergy_spi_bus
+  clk_pin: ${pin_cc1101_sck}
+  miso_pin: ${pin_cc1101_miso}
+  mosi_pin: ${pin_cc1101_mosi}
+
+efergy_cc1101:
+  spi_id: efergy_spi_bus
+  mains_voltage: ${mains_voltage}
+  preferred_tx_id: "${preferred_tx_id}"
+  publish_raw_bytes: ${publish_raw_bytes}
+  cs_pin: ${pin_cc1101_csn}
+  gdo0_pin: ${pin_cc1101_gdo0}
+  gdo2_pin: ${pin_cc1101_gdo2}
+  current:
+    id: efergy_current_a
+    name: "${friendly_name} Current"
+    object_id: efergy_current
+  power:
+    id: efergy_power_w
+    name: "${friendly_name} Power Usage"
+    object_id: efergy_power_usage
+  interval:
+    id: efergy_interval_s
+    name: "${friendly_name} Interval"
+    object_id: efergy_interval
+  pairing:
+    id: efergy_pairing
+    name: "${friendly_name} Pairing Mode"
+    object_id: efergy_pairing_mode
+  tx_id:
+    id: efergy_tx_id
+    name: "${friendly_name} TX ID"
+    object_id: efergy_tx_id
+  battery_state:
+    id: efergy_battery_state
+    name: "${friendly_name} Battery State"
+    object_id: efergy_battery_state
+  raw_bytes:
+    id: efergy_raw_bytes
+    name: "${friendly_name} Raw Bytes"
+    object_id: efergy_raw_bytes
+    disabled_by_default: true
+
+sensor:
+  - platform: copy
+    id: efergy_power_kw
+    source_id: efergy_power_w
+    internal: true
+    unit_of_measurement: "kW"
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.001
+
+  - platform: integration
+    id: efergy_energy_kwh
+    name: "${friendly_name} Energy Usage"
+    object_id: efergy_energy_usage
+    sensor: efergy_power_kw
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+    time_unit: h
+    restore: true
+    accuracy_decimals: 3
