@@ -84,6 +84,7 @@ substitutions:
   fallback_ap_password: !secret fallback_ap_password
   mains_voltage: "230.0"
   preferred_tx_id: "auto"
+  publish_raw_bytes: "false"
 
 external_components:
   - source: github://91JJ/Efergy-CT-Clamp-Capture-for-ESP-Home@main
