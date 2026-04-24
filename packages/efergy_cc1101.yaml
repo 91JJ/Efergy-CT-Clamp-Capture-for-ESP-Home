@@ -2,9 +2,9 @@ substitutions:
   device_name: efergy-sensor
   friendly_name: Efergy Energy Monitor
   board_type: esp32dev
-  wifi_ssid: ""
-  wifi_password: ""
-  fallback_ap_password: "change-this-fallback-password"
+ # wifi_ssid: ""
+ # wifi_password: ""
+ # fallback_ap_password: "change-this-fallback-password"
   mains_voltage: "230.0"
   preferred_tx_id: "auto"
   publish_raw_bytes: "false"
