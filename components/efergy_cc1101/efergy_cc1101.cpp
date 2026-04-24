@@ -478,7 +478,7 @@ bool EfergyCc1101Component::accept_candidate_(const DecodeResult &candidate) {
           contender->hits++;
       } else {
         contender->hits = 1;
-    }
+      }
 
       contender->best_quality = std::max(contender->best_quality, candidate.quality);
       contender->interval_s = (uint8_t) candidate.interval_s;
@@ -489,6 +489,7 @@ bool EfergyCc1101Component::accept_candidate_(const DecodeResult &candidate) {
       locked_tx_id_ = contender->tx_id;
       ESP_LOGI(TAG, "Locked TX candidate %04X after %u matching frames", locked_tx_id_, contender->hits);
       return true;
+    }
   }
 
   return candidate.quality >= 12;
