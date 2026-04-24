@@ -47,6 +47,14 @@ class EfergyCc1101Component : public Component,
     int quality{0};
   };
 
+  struct LockContender {
+    uint16_t tx_id{0};
+    uint32_t last_seen_ms{0};
+    uint8_t hits{0};
+    uint8_t interval_s{0};
+    int best_quality{0};
+  };
+
   static constexpr const char *const TAG = "efergy_cc1101";
   static constexpr int MAX_EDGES = 384;
   static constexpr uint16_t NOISE_MIN = 25;
@@ -60,6 +68,7 @@ class EfergyCc1101Component : public Component,
   static constexpr uint32_t LOCK_INTERVAL_TOLERANCE_MS = 4000;
   static constexpr uint8_t LOCK_MIN_HITS = 3;
   static constexpr int LOCK_MIN_QUALITY = 10;
+  static constexpr size_t MAX_LOCK_CONTENDERS = 4;
 
   static EfergyCc1101Component *instance_;
 
@@ -99,10 +108,7 @@ class EfergyCc1101Component : public Component,
   uint16_t last_tx_id_{0};
   uint32_t last_tx_seen_ms_{0};
   uint8_t last_tx_hits_{0};
-  uint16_t contender_tx_id_{0};
-  uint32_t contender_last_seen_ms_{0};
-  uint8_t contender_hits_{0};
-  uint8_t contender_interval_s_{0};
+  LockContender lock_contenders_[MAX_LOCK_CONTENDERS]{};
   uint16_t locked_tx_id_{0};
   uint16_t preferred_tx_id_{0};
 
